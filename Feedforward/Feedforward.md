@@ -1,11 +1,11 @@
 # Projectgegevens
-**VOORNAAM NAAM:**  Plaats hier jouw voornaam & naam.
+**VOORNAAM NAAM:**  Wout Demeyere
 
-**Sparringpartner:** schrijf hier de naam van jouw sparring partner. Deze persoon is jouw klankbord, redder in nood, motivator, partner in crime :-)
+**Sparringpartner:** Torre Baert
 
-**Projectsamenvatting in max 10 woorden:** schrijf hier jouw samenvatting
+**Projectsamenvatting in max 10 woorden:** Het aansturen van een motor via dmx/artnet
 
-**Projecttitel:** plaats hier een catchy werktitel van jouw project
+**Projecttitel:** DMX gestuurde takels
 
 
 # Tips voor feedbackgesprekken
@@ -30,20 +30,20 @@
 
 # Feedforward gesprekken
 
-## Gesprek 1 (Datum: dd/mm/yyyy)
-Lector: 
+## Gesprek 1 (Datum: 18/03/2020)
+Lector: Dieter & Johan
 
 Vragen voor dit gesprek:
-- [x] vraag 1:
-- [ ] vraag 2:
+- [x] vraag 1: Telt artnet/dmx als sensor
+- [ ] vraag 2: Is er een eindeloop nodig
 
 Dit is de feedback op mijn vragen. 
-- feedback 1
-- feedback 2
+- feedback 1: Ja
+- feedback 2: Ja in geval van falen motor
 
 Hier komt de feedforward: wat ga ik concreet doen?
-- [ ] ToDo 1
-- [ ] ToDo 2
+- [ ] ToDo 1: Artnet/dmx verder onderzoeken / uitwerken 
+- [ ] ToDo 2: Eindeloop toevoegen aan schema / uitdenken hoe de brake veilig verloopt
 
 ## Gesprek 2 (Datum: dd/mm/yyyy)
 Lector: 
