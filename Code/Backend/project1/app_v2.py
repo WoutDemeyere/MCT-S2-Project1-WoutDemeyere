@@ -1,5 +1,5 @@
 from repositories.DataRepository import DataRepository
-from modules.artnet import artnet
+from modules.artnet2 import artnet
 
 from flask import Flask, jsonify
 from flask_socketio import SocketIO
@@ -19,6 +19,11 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 CORS(app)
 
 takel_ip = '169.254.10.50'
+
+#threading.Timer(2, node.send_ArtPoll()).start()
+
+#ArtPollCheck = threading.Thread(target=node.start())
+#ArtPollCheck.start()
 
 @socketio.on('connect')
 def initial_connection():
@@ -70,15 +75,41 @@ def set_end(data):
     else:
         socketio.emit('B2F_new_end', {'slider_val': 255})
         node.send_channel(takel_ip, 0, 0, 41, 0)
+
+@socketio.on('F2B_set_art_vals')
+def set_art_vals(data):
+    sub = int(data['sub'])
+    uni = int(data['uni'])
+    chan = int(data['chan'])
     
+    print(f'setting artnet vals sub: {sub}  uni: {uni}  chan: {chan}')
+
+    node.send_channel(takel_ip, 0, 0, 69, 56)
+    node.send_channel(takel_ip, 0, 0, 70, chan)
+    node.send_channel(takel_ip, 0, 0, 72, sub)
+    node.send_channel(takel_ip, 0, 0, 73, uni)
+    time.sleep(0.3)
+    node.send_channel(takel_ip, 0, 0, 69, 0)
+
 
 @socketio.on('F2B_give_ip')
 def get_ip(data):
     print('Giving IP')
-    
-    ip = node.get_ip()
-    DataRepository.update_ip(1, ip)
-    socketio.emit('B2F_takel_ip', {'ip': ip}) #(5)
+    t = threading.Thread(target=node.callout())
+    t.start()
 
-if __name__ == '__main__':
+    ips = node.get_ip()
+    #DataRepository.update_ip(1, ip)
+    socketio.emit('B2F_takel_ip', ips) #(5)
+
+# if __name__ == '__main__':
+#     socketio.run(app, debug=False, host='0.0.0.0')
+
+while 1:
     socketio.run(app, debug=False, host='0.0.0.0')
+
+
+
+
+    
+

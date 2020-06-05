@@ -1,6 +1,7 @@
 import socket
 from .ArtPackets import ArtPacket
 import threading
+import time
 
 OpCodes = {'OpPoll':0x2000, 'OpPollReply':0x2100, 'OpAddress':0x6000, 'OpInput':0x7000, 'OpDMX':0x5000, 'OpNzs':0x5100, 'OpSync':0x5200}
 
@@ -16,7 +17,8 @@ class artnet:
 
         self.rec_ip = '169.254.10.50'
 
-        #self.artpollcheck = threading.Thread(self.check_ArtPoll)
+        #self.check_ArtPoll()
+        #self.send_ArtPoll();
  
 
     def decode_packet(self, packet):
@@ -27,7 +29,6 @@ class artnet:
 
     def rec_packet(self, uni, sub):
         rec_data, self.rec_ip = self.socket.recvfrom(1024)
-        print(rec_data)
 
         OpCode = self.decode_packet(rec_data)
 
@@ -69,19 +70,32 @@ class artnet:
     
     def send_ArtPoll(self):
         ArtPollPacket = ArtPacket.encode_ArtPoll()
-        self.socket.sendto(ArtPollPacket, ('', self.UDP_PORT))
+        #self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.socket.sendto(ArtPollPacket, ('169.254.10.50', self.UDP_PORT))
+        print('sending ArtPoll')
+    
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        time.sleep(1)
+        self.check_ArtPoll()
 
     def send_ArtPollReply(self):
-        ArtPollReplyPacket = ArtPacket.encode_ArtPollReply(self.UDP_IP_LOCAL, 6454, )
+        ArtPollReplyPacket = ArtPacket.encode_ArtPollReply(self.UDP_IP_LOCAL)
 
     def check_ArtPoll(self):
-        rec_data, self.rec_ip = self.socket.recvfrom(1024)
+        rec_data, rec_ip = self.socket.recvfrom(1024)
         OpCode = self.decode_packet(rec_data)
+        print(f'OpCode: {OpCode}')
 
-        if OpCode == OpCodes['OpArtPoll']:
+        if OpCode == OpCodes['OpPoll']:
             self.send_ArtPollReply()
-        
 
+        elif OpCode == 0x2100:
+            rec_ip, port, short_name, long_name, mac, bindIP = ArtPacket.decode_ArtPollReply(rec_data)
+            print(f'Takel ip: {self.rec_ip} Name: {short_name} Mac: {mac}')
+        else:
+            pass
+        
+    
     def get_ip(self):
         return self.rec_ip
         
