@@ -20,7 +20,7 @@ class artnet:
         self.socket.setblocking(0)
         self.socket.settimeout(3)
 
-        self.takels = []
+        self.takels = ['192.169.1.69']
 
         self.rec_data = 0
         self.rec_ip = 0
@@ -105,7 +105,7 @@ class artnet:
         encoded_packet = ArtPacket.encode_ArtDMX(sub, uni, len(self.dmx_packet), self.dmx_packet)
         self.socket.sendto(encoded_packet, (ip, self.port))
     
-    def get_ip(self):
+    def get_ips(self):
         return self.takels
     
 
