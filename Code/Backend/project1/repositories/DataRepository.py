@@ -22,6 +22,13 @@ class DataRepository:
         return Database.execute_sql(sql, params)
 
     @staticmethod
+    def add_controller(id, ip):
+        sql = "INSERT INTO controller(controller_id, ip) VALUES(%s, %s)"
+        params = [id, ip]
+        return Database.execute_sql(sql, params)
+
+
+    @staticmethod
     def get_takel_info (ip):
         sql = "SELECT takel_id, ip, subnet, universe, channel, CURR_POS FROM takel WHERE ip = %s"
         params = [ip]

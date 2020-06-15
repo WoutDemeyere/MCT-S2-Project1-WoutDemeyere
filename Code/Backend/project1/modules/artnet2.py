@@ -78,14 +78,38 @@ class artnet:
     
         
     def read_channel(self, sub, uni, chan):
-        self.start()
-        if self.Op_is_ArtDMX:
+        rec_data, rec_ip = self.socket.recvfrom(1024)
+
+        OpCode = (rec_data[9] << 8) | rec_data[8]
+
+        if OpCode == OpCodes['ArtDMX']:
             self.seq, self.phy, self.subn, self.univ, self.length, self.dmx_buffer = ArtPacket.decode_ArtDMX(self.rec_data)
         
         if sub == self.subn and uni == self.univ:
             for i in range(self.length):
                 if i == chan:
                     return dmx_buffer[i]
+    
+    def read_start(self, sub, uni):
+        rec_data, rec_ip = self.socket.recvfrom(1024)
+
+        print(rec_data)
+
+        OpCode = (rec_data[9] << 8) | rec_data[8]
+
+        if OpCode == OpCodes['ArtDMX']:
+            self.seq, self.phy, self.subn, self.univ, self.length, self.dmx_buffer = ArtPacket.decode_ArtDMX(self.rec_data)
+        
+        if sub == self.subn and uni == self.univ:          
+            byte1 =  self.dmx_buffer[80]
+            byte2 =  self.dmx_buffer[81]
+            byte3 =  self.dmx_buffer[82]
+            byte4 =  self.dmx_buffer[83]
+
+        print(byte1)
+        print(byte2)
+        print(byte3)
+        print(byte4)
 
     def send_ArtPoll(self):
         ArtPollPacket = ArtPacket.encode_ArtPoll()

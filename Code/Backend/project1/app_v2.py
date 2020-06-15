@@ -46,7 +46,7 @@ ni.ifaddresses('eth0')
 
 # --- ARTNET THINGS
 
-node = artnet('169.254.10.1', 6454)
+node = artnet(ni.ifaddresses('eth0')[2][0]['addr'], 6454)
 dmx_packet = bytearray(512)
 
 app = Flask(__name__)
@@ -71,19 +71,24 @@ SUB_set_end = 0
 UNI_set_end = 1
 CHAN_set_end = 41
 
+# -- SET ZERO
+SUB_set_zero = 0 
+UNI_set_zero = 1
+CHAN_set_zero = 30
+
 # -- MOVE UP
 SUB_move_up = 0 
-UNI_move_up = 0
+UNI_move_up = 1
 CHAN_move_up = 50
 
 # -- MOVE DOWN
 SUB_move_down = 0 
-UNI_move_down = 0
+UNI_move_down = 1
 CHAN_move_down = 51
 
 # -- SET ARTNET VALUES
 SUB_set_vals = 0 
-UNI_set_vals = 0 
+UNI_set_vals = 1
 
 CHAN_set_vals = 69
 
@@ -146,8 +151,11 @@ def set_start(data):
     if start:
         print('setting start')
         node.send_channel(takel_ip, SUB_set_start, UNI_set_start, CHAN_set_start, VAL_FOR_EXE)
+
+        #t = threading.Thread(target=node.read_start(0, 0))
+        #t.start()
     else:
-        socketio.emit('B2F_new_start', {'slider_val': 0})
+        # socketio.emit('B2F_new_start', {'slider_val': 0})
         node.send_channel(takel_ip, SUB_set_start, UNI_set_start, CHAN_set_start, 0)
 
 @socketio.on('F2B_set_end')
@@ -159,7 +167,7 @@ def set_end(data):
         print('setting end')
         node.send_channel(takel_ip, SUB_set_end, UNI_set_end, CHAN_set_end, VAL_FOR_EXE)
     else:
-        socketio.emit('B2F_new_end', {'slider_val': 255})
+        # socketio.emit('B2F_new_end', {'slider_val': 255})
         node.send_channel(takel_ip, SUB_set_end, UNI_set_end, CHAN_set_end, 0)
 
 @socketio.on('F2B_set_art_vals')
@@ -186,6 +194,19 @@ def set_art_vals(data):
     node.send_channel(takel_ip, SUB_set_vals, UNI_set_vals, CHAN_set_uni, uni)
     time.sleep(0.3)
     node.send_channel(takel_ip, SUB_set_vals, UNI_set_vals, CHAN_set_vals, 0)
+
+
+@socketio.on('F2B_set_zero')
+def set_zero(data):
+    start = data['set']
+    takel_ip = data['ip']
+    
+    if start:
+        print('setting zero')
+        node.send_channel(takel_ip, SUB_set_zero, UNI_set_zero, CHAN_set_zero, VAL_FOR_EXE)
+    else:
+        # socketio.emit('B2F_new_end', {'slider_val': 255})
+        node.send_channel(takel_ip, SUB_set_zero, UNI_set_zero, CHAN_set_zero, 0)
 
 
 @socketio.on('F2B_find_devs')
@@ -221,6 +242,7 @@ def get_ip(data):
 
 
 
+DataRepository.add_controller(0, ni.ifaddresses('eth0')[2][0]['addr'])
 
 while 1:
     oled_show_info()
